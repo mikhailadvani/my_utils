@@ -3,6 +3,7 @@ import os, sys
 import math
 import boto
 import argparse
+import hashlib
 
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
@@ -26,6 +27,15 @@ def parse_arguments():
 def multipart_upload_to_be_used(file_path):
     file_size = os.stat(file_path).st_size
     return file_size > args.multipart_threshold
+
+def need_to_update(s3_connection, bucket_name, file_path, s3_path):
+    bucket = s3_connection.get_bucket(bucket_name)
+    key = bucket.get_key(s3_path)
+    if key is None:
+        return True
+    else:
+        local_md5 = hashlib.md5(open(file_path, "rb").read()).hexdigest()
+        return local_md5 != key.etag.strip('"')
 
 def simple_upload(s3_connection, bucket_name, file_path, s3_path):
     bucket = s3_connection.get_bucket(bucket_name)
@@ -70,11 +80,18 @@ def multipart_upload(s3, bucketname, file_path, s3_path):
         multipart_upload_request.cancel_upload()
         print "Upload failed"
 
+def upload(s3_connection, bucketname, file_path, s3_path):
+    if multipart_upload_to_be_used(args.file_path) and args.mode != 'simple-upload':
+        multipart_upload(s3_connection, bucketname, file_path, s3_path)
+    else:
+        simple_upload(s3_connection, bucketname, file_path, s3_path)
+
 if __name__ == "__main__":
     args = parse_arguments()
     s3_connection = boto.connect_s3(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
-    if multipart_upload_to_be_used(args.file_path) and args.mode != 'simple-upload':
-        multipart_upload(s3_connection, args.bucket, args.file_path, args.key)
+    if args.mode != 'sync' or need_to_update(s3_connection, args.bucket, args.file_path, args.key):
+        upload(s3_connection, args.bucket, args.file_path, args.key)
     else:
-        simple_upload(s3_connection,args.bucket, args.file_path, args.key)
+        print "Nothing to update"
+
 
