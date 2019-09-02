@@ -1,0 +1,18 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+	name = ""
+	email = ""
+[alias]
+	co = checkout
+	l = log --oneline
+	lol = log --graph --decorate --pretty=oneline --abbrev-commit --all
+	cano = commit --amend --no-edit
+	pr = pull --rebase --prune --recurse-submodules
+	ba = branch --list
+	bar = branch --all
+	st = status
+	dc = diff --cached --color
+	cl = clone --recurse-submodules
+	pom = push origin master
+	diff = diff --color
