@@ -17,13 +17,11 @@ alias refresh_terra="/usr/local/bin/terraform refresh"
 alias clean_terra="find . -name .terraform -type d | xargs rm -r"
 
 # 2 line kube-ps1 context
-source "/usr/local/opt/kube-ps1/share/kube-ps1.sh"
-PS1='$(kube_ps1)'$PS1
-
-# The next 2 lines are for kubectl bash completion
-  [ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
-source <(kubectl completion bash)
+if [ -f $HOME/work/mikhailadvani/kube-ps1/kube-ps1.sh ]; then
+  source "$HOME/work/mikhailadvani/kube-ps1/kube-ps1.sh"
+  PS1='$(kube_ps1)'$PS1
+fi
 
 # The next line is to allow cross account authentication in terraform
 export AWS_SDK_LOAD_CONFIG=1
-export GOPATH=/Users/Mikhail/go
+export GOPATH=$HOME/go
