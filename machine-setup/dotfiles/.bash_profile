@@ -22,6 +22,9 @@ if [ -f $HOME/work/mikhailadvani/kube-ps1/kube-ps1.sh ]; then
   PS1='$(kube_ps1)'$PS1
 fi
 
+export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+
 # The next line is to allow cross account authentication in terraform
 export AWS_SDK_LOAD_CONFIG=1
 export GOPATH=$HOME/go
