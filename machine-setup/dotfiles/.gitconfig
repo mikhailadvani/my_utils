@@ -16,3 +16,5 @@
 	cl = clone --recurse-submodules
 	pom = push origin master
 	diff = diff --color
+[core]
+        excludesfile = /Users/mikhailadvani/.gitignore
